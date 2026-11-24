@@ -270,3 +270,62 @@ test_that("fit_model fails when there are insufficient residual degrees of freed
     "Insufficient degrees of freedom for variance estimation"
   )
 })
+
+# Regression test for the Cholesky correction in babebi 0.1.1
+
+test_that("posterior draws reproduce the theoretical covariance matrix", {
+  dat <- data.frame(
+    id = rep(1:4, each = 4),
+    time = rep(c("pre", "pre", "post", "post"), times = 4),
+    rater = rep(c("r1", "r2"), times = 8),
+    y = c(
+      3.0, 3.2, 3.8, 4.0,
+      2.9, 3.1, 3.5, 3.7,
+      3.4, 3.6, 4.0, 4.1,
+      3.1, 3.3, 3.9, 4.0
+    )
+  )
+
+  fit <- fit_model(
+    data = dat,
+    id = id,
+    time = time,
+    rater = rater,
+    outcome = y,
+    time_order = c("pre", "post"),
+    rater_order = c("r1", "r2"),
+    n_draws = 50000,
+    seed = 123
+  )
+
+  # Rater-specific change scores.
+  d1 <- c(0.8, 0.6, 0.6, 0.8)
+  d2 <- c(0.8, 0.6, 0.5, 0.7)
+
+  N <- length(d1)
+
+  # Pooled residual variance under the implemented model.
+  sigma2 <- (
+    sum((d1 - mean(d1))^2) +
+      sum((d2 - mean(d2))^2)
+  ) / (2 * N - 2)
+
+  # Theoretical covariance matrix of the normal approximation.
+  V_expected <- (sigma2 / N) * matrix(
+    c(1, -1, -1, 2),
+    nrow = 2
+  )
+
+  # Numerical stabilisation used in fit_model().
+  diag(V_expected) <- diag(V_expected) + 1e-10
+
+  # Empirical covariance matrix of the posterior draws.
+  V_observed <- stats::cov(fit$posterior_draws)
+
+  # Scale-independent discrepancies between covariance matrices.
+  discrepancy <- abs(V_observed - V_expected) /
+    sqrt(outer(diag(V_expected), diag(V_expected)))
+
+  # Allow for Monte Carlo sampling variability.
+  expect_lt(max(discrepancy), 0.05)
+})

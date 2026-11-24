@@ -150,9 +150,15 @@ fit_model <- function(data,
   eps <- 1e-10
   diag(V_beta) <- diag(V_beta) + eps
 
-  L <- chol(V_beta)
+  # Upper-triangular Cholesky factor:
+  # t(U) %*% U = V_beta.
+  U <- chol(V_beta)
+
+  # Each row of Z is an independent standard normal vector.
   Z <- matrix(stats::rnorm(as.integer(n_draws) * p), ncol = p)
-  theta_draws <- sweep(Z %*% t(L), 2, bh, `+`)
+
+  # Right multiplication by U ensures covariance V_beta.
+  theta_draws <- sweep(Z %*% U, 2, bh, `+`)
 
   beta_draws <- theta_draws[, 1]
   gamma_draws <- theta_draws[, 2]

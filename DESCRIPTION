@@ -2,7 +2,7 @@ Package: babebi
 Type: Package
 Title: Bayesian Estimation and Validation for Small-N Designs with
         Rater Bias
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person(
       given = "Irene",
@@ -62,7 +62,7 @@ Imports: stats, graphics
 Suggests: testthat (>= 3.0.0), knitr, rmarkdown
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2026-04-22 12:33:34 UTC; irene
+Packaged: 2026-11-24 15:12:35 UTC; irene
 Author: Irene Gianeselli [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-8689-3035>, affiliation: Free
     University of Bozen-Bolzano),
@@ -72,4 +72,4 @@ Author: Irene Gianeselli [aut, cre] (ORCID:
     affiliation: Free University of Bozen-Bolzano)
 Maintainer: Irene Gianeselli <irene.gianeselli@unibz.it>
 Repository: CRAN
-Date/Publication: 2026-04-23 20:10:09 UTC
+Date/Publication: 2026-11-24 15:40:02 UTC
